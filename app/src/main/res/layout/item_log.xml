@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+
+ <androidx.constraintlayout.widget.ConstraintLayout
+   android:id="@+id/logItemLayout"
+   android:layout_width="match_parent"
+   android:layout_height="wrap_content"
+   android:layout_marginBottom="12dp"
+   android:background="@drawable/squere_frame"
+   android:backgroundTint="@color/onbackground"
+   android:padding="8dp">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/itemIcon"
+    android:layout_width="50dp"
+    android:layout_height="50dp"
+    android:background="@drawable/squere_frame_with_outline"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <LinearLayout
+    android:id="@+id/linearLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="0dp"
+    android:layout_marginStart="16dp"
+    android:orientation="vertical"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp"
+    app:layout_constraintBottom_toBottomOf="@+id/itemIcon"
+    app:layout_constraintStart_toEndOf="@+id/itemIcon"
+    app:layout_constraintTop_toTopOf="@+id/itemIcon"
+    app:layout_constraintVertical_bias="0.476">
+
+   <TextView
+     android:id="@+id/tittle"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_weight="1"
+     android:fontFamily="@font/ubuntu_medium"
+     android:gravity="top"
+     android:text="Lanjo"
+     android:textColor="@color/black"
+     android:textSize="16sp" />
+
+   <TextView
+     android:id="@+id/tittle4"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_weight="1"
+     android:fontFamily="@font/rubik_medium"
+     android:gravity="bottom"
+     android:text="TextView"
+     android:textSize="12sp" />
+
+  </LinearLayout>
+
+  <LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="0dp"
+    android:gravity="end"
+    android:orientation="vertical"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp"
+    app:layout_constraintBottom_toBottomOf="@+id/itemIcon"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="@+id/itemIcon">
+
+   <TextView
+     android:id="@+id/tittle3"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_weight="1"
+     android:fontFamily="@font/ubuntu_medium"
+     android:gravity="top|center_vertical|end"
+     android:text="+Rp18.000"
+     android:textColor="@color/text_primary"
+     android:textSize="14sp" />
+
+   <TextView
+     android:id="@+id/tittle2"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_weight="1"
+     android:fontFamily="@font/ubuntu"
+     android:gravity="bottom"
+     android:text="1 Jan 2000, 18.34"
+     android:textAlignment="textEnd"
+     android:textColor="@color/black"
+     android:textSize="12sp" />
+  </LinearLayout>
+
+ </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
