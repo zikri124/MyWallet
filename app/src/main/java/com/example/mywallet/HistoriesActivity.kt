@@ -93,7 +93,7 @@ class HistoriesActivity : AppCompatActivity(), View.OnClickListener, ItemLogRVAd
         recyclerView.adapter = dataItemLogRVAdapter
     }
 
-    private fun getLogsData(category : String) {
+    private fun getLogsData(type : String) {
         mDB.collection("logs")
             .whereEqualTo("uid",uid)
             .orderBy("date", Query.Direction.DESCENDING)
@@ -121,10 +121,10 @@ class HistoriesActivity : AppCompatActivity(), View.OnClickListener, ItemLogRVAd
                 val date = document.data.getValue("date").toString()
                 val time = document.data.getValue("time").toString()
                 val type = document.data.getValue("type").toString()
-                val amount = document.data.getValue("ammount").toString().toInt()
-                val objectType = document.data.getValue("objectType").toString()
+                val amount = document.data.getValue("amount").toString().toInt()
+                val category = document.data.getValue("category").toString()
                 val note = document.data.getValue("note").toString()
-                val data = dataRV(id, name, date, time, type, amount, objectType, note)
+                val data = dataRV(id, name, date, time, type, amount, category, note)
                 dataset.add(data)
             }
         }

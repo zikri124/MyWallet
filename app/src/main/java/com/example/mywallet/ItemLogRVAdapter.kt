@@ -18,7 +18,7 @@ internal class ItemLogRVAdapter(private val dataSet: ArrayList<dataRV>) : Recycl
         val amount : TextView
         val itemIcon : ConstraintLayout
         val item : ConstraintLayout
-        val objectType : TextView
+        val category : TextView
 
         init {
             itemName = binding.tittle
@@ -26,7 +26,7 @@ internal class ItemLogRVAdapter(private val dataSet: ArrayList<dataRV>) : Recycl
             amount = binding.tittle3
             itemIcon = binding.itemIcon
             item = binding.logItemLayout
-            objectType = binding.tittle4
+            category = binding.tittle4
         }
     }
 
@@ -47,7 +47,7 @@ internal class ItemLogRVAdapter(private val dataSet: ArrayList<dataRV>) : Recycl
         val result = dataSet.get(position)
         holder.itemName.text = result.getName()
         holder.itemTime.text = result.getDate() + ", " + result.getTime()
-        holder.objectType.text = result.getObjectType()
+        holder.category.text = result.getCategory()
 
         if (result.getType() == "income") {
             holder.amount.text = "+Rp " + formatter(result.getAmount().toString())
@@ -95,14 +95,14 @@ internal class ItemLogRVAdapter(private val dataSet: ArrayList<dataRV>) : Recycl
     }
 }
 
-class dataRV(id : String, name : String, date : String, time : String, type : String, amount : Int, objectType : String, note : String) {
+class dataRV(id : String, name : String, date : String, time : String, type : String, amount : Int, category : String, note : String) {
     private var id : String
     private var name : String
     private var date : String
     private var time : String
     private var type : String
     private var amount : Int
-    private var objectType: String
+    private var category: String
     private var note : String
 
     init {
@@ -112,7 +112,7 @@ class dataRV(id : String, name : String, date : String, time : String, type : St
         this.time = time
         this.type = type
         this.amount = amount
-        this.objectType = objectType
+        this.category = category
         this.note = note
     }
 
@@ -140,8 +140,8 @@ class dataRV(id : String, name : String, date : String, time : String, type : St
         return amount
     }
 
-    fun getObjectType() : String {
-        return objectType
+    fun getCategory() : String {
+        return category
     }
 
     fun getNote() : String {

@@ -38,7 +38,7 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var dateInput : TextInputEditText
     private lateinit var timeInput : TextInputEditText
     private lateinit var accountInput: AutoCompleteTextView
-    private lateinit var typeInput: TextInputEditText
+    private lateinit var categoryInput: TextInputEditText
     private lateinit var amountInput: TextInputEditText
     private lateinit var dateInputLayout: TextInputLayout
     private lateinit var timeInputLayout: TextInputLayout
@@ -51,7 +51,6 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
     private var datePicker =
         MaterialDatePicker.Builder.datePicker()
             .setTitleText("Select date")
-//            .setTheme(R.style.ThemeOverlay_App_DatePicker)
             .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
             .build()
     private var timePicker =
@@ -88,7 +87,7 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
         dateInput = binding.textInputDate
         timeInput = binding.textInputTime
         accountInput = binding.textInputAccount
-        typeInput = binding.textInputType
+        categoryInput = binding.textInputCategory
         amountInput = binding.textInputAmount
         dateInputLayout = binding.textInputDateLayout
         timeInputLayout = binding.textInputTimelayout
@@ -100,39 +99,32 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
 
         accountInput.setOnClickListener(this)
 
-        dateInput.setOnTouchListener { v, event ->
-            when (event?.action) {
-                MotionEvent.ACTION_DOWN -> datePicker.show(supportFragmentManager, "DATE_PICKER")
-            }
+//        dateInput.setOnTouchListener { v, event ->
+//            when (event?.action) {
+//                MotionEvent.ACTION_DOWN -> datePicker.show(supportFragmentManager, "DATE_PICKER")
+//            }
+//
+//            v?.onTouchEvent(event) ?: true
+//        }
 
-            v?.onTouchEvent(event) ?: true
+        dateInput.setOnClickListener {
+            datePicker.show(supportFragmentManager, "DATE_PICKER")
         }
 
-        timeInput.setOnTouchListener { v, event ->
-            when (event?.action) {
-                MotionEvent.ACTION_DOWN -> timePicker.show(supportFragmentManager, "TIME_PICKER")
-            }
-
-            v?.onTouchEvent(event) ?: true
+        timeInput.setOnClickListener {
+            timePicker.show(supportFragmentManager, "TIME_PICKER")
         }
 
         datePicker.addOnPositiveButtonClickListener {
-            val outputDateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).apply {
+            val outputDateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).apply {
                 timeZone = TimeZone.getTimeZone("UTC")
-            }
-
-            var dateText = datePicker.headerText
-
-            var dateTextArray = dateText.split(" ")
-            if (dateTextArray[1].length == 2) {
-                dateText = dateTextArray[0] + " 0" + dateTextArray[1] + " " + dateTextArray[2]
             }
 
             val temp = outputDateFormat.format(it)
 
-            Log.d("coba", temp)
 
-            dateInput.setText(dateText)
+
+            dateInput.setText(temp)
         }
 
         timePicker.addOnPositiveButtonClickListener {
@@ -225,9 +217,9 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
             isError = true
             binding.textInputAmountlayout.error = "Please fill this field"
         }
-        if (typeInput.text.toString() == "") {
+        if (categoryInput.text.toString() == "") {
             isError = true
-            binding.textInputTypelayout.error = "Please fill this field"
+            binding.textInputCategorylayout.error = "Please fill this field"
         }
         if (accountInput.text.toString() == "") {
             isError = true
@@ -245,8 +237,8 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
             "date" to binding.textInputDate.text.toString(),
             "time" to binding.textInputTime.text.toString(),
             "type" to transactionType,
-            "ammount" to binding.textInputAmount.text.toString().toInt(),
-            "objectType" to binding.textInputType.text.toString(),
+            "amount" to binding.textInputAmount.text.toString().toInt(),
+            "category" to binding.textInputCategory.text.toString(),
             "account" to binding.textInputAccount.text.toString(),
             "note" to binding.textInputNote.text.toString()
         )
@@ -281,6 +273,9 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
                         Log.e("FirestoreLog", text)
                         Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
                     }
+            }
+            else -> {
+                showResponseDialog()
             }
         }
     }

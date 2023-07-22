@@ -19,6 +19,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import kotlin.collections.ArrayList
 
@@ -67,7 +68,7 @@ class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickList
                 override fun onPreDraw(): Boolean {
                     return if (contentHasLoaded) {
                         content.viewTreeObserver.removeOnPreDrawListener(this)
-                        getLogsData("all")
+                        getLogsData()
                         true
                     } else false
                 }
@@ -89,9 +90,9 @@ class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickList
             .get()
             .addOnSuccessListener { documentSnapshot ->
                 uid = "ENBQXgcU0S4uGKRx6jwt"
-                var name = documentSnapshot["name"].toString()
+                val name = documentSnapshot["name"].toString()
                 balance = documentSnapshot["balance"].toString()
-                var amount = "Rp " + formatter(balance)
+                val amount = "Rp " + formatter(balance)
                 mainBinding.textViewName.text = name
                 mainBinding.textViewBalance.text = amount
                 contentHasLoaded = true
@@ -104,20 +105,16 @@ class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickList
             }
     }
 
-    private fun setStats(dataset: ArrayList<dataRV>) {
-        val c = Calendar.getInstance()
-        val year = c.get(Calendar.YEAR)
-        val day = c.get(Calendar.DATE)
-        val month = c.time.toString().substring(4, 7)
-
-        val dateStr = month + " " + day + ", " + year
+    private fun setStats(datasets: ArrayList<dataRV>) {
+        val formatter = SimpleDateFormat("yyyy/MM/dd")
+        val formattedDate = formatter.format(Calendar.getInstance().time)
 
         var todayExpense = 0
         var monthExpense = 0
-        for (dataset in dataset) {
+        for (dataset in datasets) {
             if (dataset.getType() == "outcome") {
-                var amount = dataset.getAmount()
-                if (dataset.getDate() == dateStr) {
+                val amount = dataset.getAmount()
+                if (dataset.getDate() == formattedDate) {
                     todayExpense += amount
                 }
                 monthExpense += amount
@@ -134,22 +131,22 @@ class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickList
         recyclerView.adapter = dataItemLogRVAdapter
     }
 
-    private fun getLogsData(category : String) {
-        val c = Calendar.getInstance()
-        val month = c.time.toString().substring(4, 7)
-        val year = c.get(Calendar.YEAR)
-        val dateStr = month + " 01, " + year
+    private fun getLogsData() {
+        val calendarInstance = Calendar.getInstance()
+        var month = calendarInstance.get(Calendar.MONTH).toString()
+        month = if (month.toInt() < 10) "0$month" else month
+        val formattedDate = calendarInstance.get(Calendar.YEAR).toString() + "/" + month + "/" + "01"
 
         mDB.collection("logs")
             .whereEqualTo("uid",uid)
-            .whereGreaterThanOrEqualTo("date", dateStr)
+            .whereGreaterThanOrEqualTo("date", formattedDate)
             .orderBy("date", Query.Direction.DESCENDING)
             .orderBy("time", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { documentSnapshot ->
                 documents = documentSnapshot
                 Log.d("FirestoreLog", "Success")
-                setItemsData("all")
+                setItemsData()
             }
             .addOnFailureListener { exception ->
                 val text = "Error when getting documents : " + exception
@@ -158,7 +155,7 @@ class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickList
             }
     }
 
-    private fun setItemsData(type: String) {
+    private fun setItemsData() {
         val dataset = ArrayList<dataRV>()
         for (document in documents!!) {
             val id = document.id
@@ -166,10 +163,10 @@ class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickList
             val date = document.data.getValue("date").toString()
             val time = document.data.getValue("time").toString()
             val type = document.data.getValue("type").toString()
-            val amount = document.data.getValue("ammount").toString().toInt()
-            val objectType = document.data.getValue("objectType").toString()
+            val amount = document.data.getValue("amount").toString().toInt()
+            val category = document.data.getValue("category").toString()
             val note = document.data.getValue("note").toString()
-            val data = dataRV(id, name, date, time, type, amount, objectType, note)
+            val data = dataRV(id, name, date, time, type, amount, category, note)
             dataset.add(data)
         }
         setStats(dataset)
