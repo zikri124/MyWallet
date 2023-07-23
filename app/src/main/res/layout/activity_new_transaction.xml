@@ -77,7 +77,6 @@
 
         <com.google.android.material.textfield.TextInputLayout
           android:id="@+id/textInputAccountlayout"
-          style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginBottom="16dp"
@@ -85,6 +84,30 @@
 
           <AutoCompleteTextView
             android:id="@+id/textInputAccount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:elegantTextHeight="false"
+            android:inputType="none"
+            android:paddingStart="16dp"
+            android:paddingTop="17dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="17dp"
+            android:popupTheme="@style/Base.Theme.MyWallet"
+            android:focusable="false"
+            android:focusableInTouchMode="false"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+          android:id="@+id/textInputCategorylayout"
+          style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="16dp"
+          android:hint="Category">
+
+          <AutoCompleteTextView
+            android:id="@+id/textInputCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0"
@@ -107,19 +130,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text|textEnableTextConversionSuggestions" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-          android:id="@+id/textInputCategorylayout"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginBottom="16dp"
-          android:hint="Category">
-
-          <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/textInputCategory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout

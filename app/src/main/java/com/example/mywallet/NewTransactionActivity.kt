@@ -5,8 +5,8 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.MotionEvent
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.ImageButton
@@ -38,10 +38,11 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var dateInput : TextInputEditText
     private lateinit var timeInput : TextInputEditText
     private lateinit var accountInput: AutoCompleteTextView
-    private lateinit var categoryInput: TextInputEditText
+    private lateinit var categoryInput: AutoCompleteTextView
     private lateinit var amountInput: TextInputEditText
     private lateinit var dateInputLayout: TextInputLayout
     private lateinit var timeInputLayout: TextInputLayout
+    private lateinit var accountInputLayout: TextInputLayout
 
     private lateinit var balance : String
     private lateinit var uid : String
@@ -72,6 +73,7 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
         setDB()
         setView()
         setRadioListener()
+        setDropdownCategory(transactionType)
     }
 
     private fun setDB() {
@@ -91,11 +93,13 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
         amountInput = binding.textInputAmount
         dateInputLayout = binding.textInputDateLayout
         timeInputLayout = binding.textInputTimelayout
+        accountInputLayout = binding.textInputAccountlayout
 
         backButton.setOnClickListener(this)
         submitButton.setOnClickListener(this)
         dateInput.setOnClickListener(this)
         timeInput.setOnClickListener(this)
+        accountInputLayout.setOnClickListener(this)
 
         accountInput.setOnClickListener(this)
 
@@ -165,16 +169,22 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
                 }
             }
             setRadioColor(button, checked)
+            setDropdownCategory(transactionType)
             checked = button
         }
     }
 
-//    private fun setDropdownAccount() {
-//        val accountArray = arrayOf("Saku", "BNI", "BRI")
-//        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, accountArray)
-//
-//        accountInput.setAdapter(adapter)
-//    }
+    private fun setDropdownCategory(type: String) {
+        var categoryArray = arrayOf("Food", "Snack", "Entertainment", "Laundry", "Grocery", "Monthly fee", "Other")
+
+        if (type == "income") {
+            categoryArray = arrayOf("Allowance", "Other")
+        }
+
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, categoryArray)
+
+        categoryInput.setAdapter(adapter)
+    }
 
     private fun setRadioColor(radioButton: RadioButton, radioButton2: RadioButton) {
         radioButton.background.setTint(getColor(R.color.primary))
