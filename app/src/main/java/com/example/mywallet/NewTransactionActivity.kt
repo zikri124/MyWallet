@@ -1,7 +1,6 @@
 package com.example.mywallet
 
 import android.annotation.SuppressLint
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -162,10 +161,12 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
                 R.id.radioButton -> {
                     button = binding.radioButton
                     transactionType = "income"
+                    categoryInput.text = null
                 }
                 R.id.radioButton2 -> {
                     button = binding.radioButton2
                     transactionType = "outcome"
+                    categoryInput.text = null
                 }
             }
             setRadioColor(button, checked)
@@ -195,7 +196,7 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun checkBalanceIsFine() : Boolean {
-        var amount : Int = binding.textInputAmount.text.toString().toInt()
+        val amount : Int = binding.textInputAmount.text.toString().toInt()
         when (accountInput.text.toString()) {
             "Wallet" -> {
                 if (balance.toInt() < amount) {
@@ -295,7 +296,7 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
         MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_App_MaterialAlertDialog)
             .setTitle("Select an Account")
             .setCancelable(false)
-            .setSingleChoiceItems(accountArray, checkedAccountItem, DialogInterface.OnClickListener { dialogInterface, i ->
+            .setSingleChoiceItems(accountArray, checkedAccountItem, { dialogInterface, i ->
                 Log.d("dialog select", i.toString())
                 accountInput.setText(accountArray[i])
                 checkedAccountItem = i
