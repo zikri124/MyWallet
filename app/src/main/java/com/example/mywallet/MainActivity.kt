@@ -1,35 +1,34 @@
 package com.example.mywallet
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.Button
-import android.widget.Toast
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mywallet.databinding.ActivityMainBinding
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.example.mywallet.db.AppDatabase
+import com.example.mywallet.db.entity.TransactionEntity
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickListener,
     View.OnClickListener {
-    private lateinit var mDB : FirebaseFirestore
+    private lateinit var mDB : AppDatabase
     private lateinit var mainBinding: ActivityMainBinding
     private lateinit var dataItemLogRVAdapter: ItemLogRVAdapter
-    private var documents : QuerySnapshot? = null
+    private lateinit var sharedpreferences: SharedPreferences
 
+    private var transactionsList = mutableListOf<TransactionEntity>()
     private lateinit var uid : String
     private lateinit var balance : String
 
@@ -45,14 +44,16 @@ class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickList
         super.onCreate(savedInstanceState)
         mainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        setFirebase()
-        startLoadingContent()
         setupSplashScreen(splashScreen)
+        setDatabase()
+        setUserData()
+        getLogsData()
         setView()
     }
 
-    private fun setFirebase() {
-        mDB = Firebase.firestore
+    private fun setDatabase() {
+        mDB = AppDatabase.getDatabase(applicationContext)
+        Log.d("db", "DB status : " + mDB.isOpen.toString())
     }
 
     private fun setView() {
@@ -71,7 +72,6 @@ class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickList
                 override fun onPreDraw(): Boolean {
                     return if (contentHasLoaded) {
                         content.viewTreeObserver.removeOnPreDrawListener(this)
-                        getLogsData()
                         true
                     } else false
                 }
@@ -79,28 +79,96 @@ class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickList
         )
     }
 
-    private fun startLoadingContent() {
-        setUserData()
+    private fun setUserData() {
+//        mDB.collection("users").document("ENBQXgcU0S4uGKRx6jwt")
+//            .get()
+//            .addOnSuccessListener { documentSnapshot ->
+//                uid = "ENBQXgcU0S4uGKRx6jwt"
+//                val name = documentSnapshot["name"].toString()
+//                balance = documentSnapshot["balance"].toString()
+//                val amount = "Rp " + formatter(balance)
+//                mainBinding.textViewName.text = name
+//                mainBinding.textViewBalance.text = amount
+//                contentHasLoaded = true
+//                Log.d("FirestoreLog", "Success")
+//            }
+//            .addOnFailureListener { exception ->
+//                val text = "Error when getting documents : " + exception
+//                Log.e("FirestoreLog", text)
+//                Toast.makeText(this, text,Toast.LENGTH_SHORT).show()
+//            }
+        sharedpreferences = getSharedPreferences("USER_DATA", Context.MODE_PRIVATE)
+//        val userid = sharedpreferences.getString("UID", null)
+//        val name = sharedpreferences.getString("NAME", null)
+        val userid = "011"
+        val name = "Zikri"
+        uid = userid.toString()
+        balance = sharedpreferences.getString("AMOUNT_STORED", "0").toString()
+        if (userid == null) {
+            val intent = Intent(this@MainActivity, InsertFirstDataActivity::class.java)
+            startActivity(intent)
+            finishAffinity()
+        } else {
+            val amount = "Rp " + formatter(balance)
+            mainBinding.textViewName.text = name
+            mainBinding.textViewBalance.text = amount
+        }
     }
 
-    private fun setUserData() {
-        mDB.collection("users").document("ENBQXgcU0S4uGKRx6jwt")
-            .get()
-            .addOnSuccessListener { documentSnapshot ->
-                uid = "ENBQXgcU0S4uGKRx6jwt"
-                val name = documentSnapshot["name"].toString()
-                balance = documentSnapshot["balance"].toString()
-                val amount = "Rp " + formatter(balance)
-                mainBinding.textViewName.text = name
-                mainBinding.textViewBalance.text = amount
-                contentHasLoaded = true
-                Log.d("FirestoreLog", "Success")
+    private fun getLogsData() {
+        val calendarInstance = Calendar.getInstance()
+        var month = calendarInstance.get(Calendar.MONTH).toString()
+        month = if (month.toInt() < 10) "0$month" else month
+        val formattedDate = calendarInstance.get(Calendar.YEAR).toString() + "/" + month + "/" + "01"
+
+//        mDB.collection("logs")
+//            .whereEqualTo("uid",uid)
+//            .whereGreaterThanOrEqualTo("date", formattedDate)
+//            .orderBy("date", Query.Direction.DESCENDING)
+//            .orderBy("time", Query.Direction.DESCENDING)
+//            .get()
+//            .addOnSuccessListener { documentSnapshot ->
+//                documents = documentSnapshot
+//                Log.d("FirestoreLog", "Success")
+//                setItemsData()
+//            }
+//            .addOnFailureListener { exception ->
+//                val text = "Error when getting documents : " + exception
+//                Log.e("FirestoreLog", text)
+//                Toast.makeText(this, text,Toast.LENGTH_SHORT).show()
+//            }
+        transactionsList.clear()
+        transactionsList.addAll(mDB.transactionDao().loadTransactionFrom(formattedDate))
+        setItemsData()
+    }
+
+    private fun setItemsData() {
+        if (transactionsList.count() < 1) {
+            mainBinding.noDataImageView.visibility = View.VISIBLE
+            mainBinding.noDataTextView.visibility = View.VISIBLE
+            mainBinding.recyclerViewLog.visibility = View.GONE
+            contentHasLoaded = true
+        } else {
+            val dataset = ArrayList<dataRV>()
+            for (transactionData in transactionsList!!) {
+                val userid = transactionData.userId.toString()
+                if (userid == uid) {
+                    val id = transactionData.id
+                    val name = transactionData.name.toString()
+                    val date = transactionData.date.toString()
+                    val time = transactionData.time.toString()
+                    val type = transactionData.transactionType.toString()
+                    val amount = transactionData.amount!!.toInt()
+                    val category = transactionData.categoryId.toString()
+                    val note = transactionData.note.toString()
+                    val data = dataRV(id, name, date, time, type, amount, category, note)
+                    dataset.add(data)
+                }
             }
-            .addOnFailureListener { exception ->
-                val text = "Error when getting documents : " + exception
-                Log.e("FirestoreLog", text)
-                Toast.makeText(this, text,Toast.LENGTH_SHORT).show()
-            }
+            setStats(dataset)
+            setRecyclerView(dataset)
+            dataItemLogRVAdapter.listener = this
+        }
     }
 
     private fun setStats(datasets: ArrayList<dataRV>) {
@@ -127,49 +195,8 @@ class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickList
         dataItemLogRVAdapter = ItemLogRVAdapter(dataset)
         recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
         recyclerView.adapter = dataItemLogRVAdapter
-    }
 
-    private fun getLogsData() {
-        val calendarInstance = Calendar.getInstance()
-        var month = calendarInstance.get(Calendar.MONTH).toString()
-        month = if (month.toInt() < 10) "0$month" else month
-        val formattedDate = calendarInstance.get(Calendar.YEAR).toString() + "/" + month + "/" + "01"
-
-        mDB.collection("logs")
-            .whereEqualTo("uid",uid)
-            .whereGreaterThanOrEqualTo("date", formattedDate)
-            .orderBy("date", Query.Direction.DESCENDING)
-            .orderBy("time", Query.Direction.DESCENDING)
-            .get()
-            .addOnSuccessListener { documentSnapshot ->
-                documents = documentSnapshot
-                Log.d("FirestoreLog", "Success")
-                setItemsData()
-            }
-            .addOnFailureListener { exception ->
-                val text = "Error when getting documents : " + exception
-                Log.e("FirestoreLog", text)
-                Toast.makeText(this, text,Toast.LENGTH_SHORT).show()
-            }
-    }
-
-    private fun setItemsData() {
-        val dataset = ArrayList<dataRV>()
-        for (document in documents!!) {
-            val id = document.id
-            val name = document.data.getValue("name").toString()
-            val date = document.data.getValue("date").toString()
-            val time = document.data.getValue("time").toString()
-            val type = document.data.getValue("type").toString()
-            val amount = document.data.getValue("amount").toString().toInt()
-            val category = document.data.getValue("category").toString()
-            val note = document.data.getValue("note").toString()
-            val data = dataRV(id, name, date, time, type, amount, category, note)
-            dataset.add(data)
-        }
-        setStats(dataset)
-        setRecyclerView(dataset)
-        dataItemLogRVAdapter.listener = this
+        contentHasLoaded = true
     }
 
     override fun onClick(view: View, data: dataRV) {
