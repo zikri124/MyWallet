@@ -45,11 +45,14 @@ class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickList
         super.onCreate(savedInstanceState)
         mainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
+        setFirebase()
         startLoadingContent()
-
         setupSplashScreen(splashScreen)
-
         setView()
+    }
+
+    private fun setFirebase() {
+        mDB = Firebase.firestore
     }
 
     private fun setView() {
@@ -77,15 +80,10 @@ class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickList
     }
 
     private fun startLoadingContent() {
-        setDB()
-        setUser()
+        setUserData()
     }
 
-    private fun setDB() {
-        mDB = Firebase.firestore
-    }
-
-    private fun setUser() {
+    private fun setUserData() {
         mDB.collection("users").document("ENBQXgcU0S4uGKRx6jwt")
             .get()
             .addOnSuccessListener { documentSnapshot ->

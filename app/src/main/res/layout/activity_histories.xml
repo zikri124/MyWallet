@@ -41,8 +41,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginTop="16dp"
-    android:background="@drawable/circle_frame"
-    android:backgroundTint="@color/onbackground"
+    android:background="@drawable/circle_frame_with_outline"
     android:padding="12dp"
     android:rotation="180"
     app:layout_constraintStart_toStartOf="@+id/guideline5"
@@ -54,7 +53,6 @@
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_marginTop="16dp"
-    android:background="@drawable/squere_frame"
     android:backgroundTint="@color/primary"
     app:layout_constraintEnd_toStartOf="@+id/guideline4"
     app:layout_constraintStart_toStartOf="@+id/guideline5"
@@ -64,8 +62,10 @@
       android:id="@+id/typeRadioGroup"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:background="@drawable/squere_frame"
+      android:background="@drawable/circle_frame"
+      android:backgroundTint="@color/primary"
       android:orientation="horizontal"
+      android:padding="4dp"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
@@ -76,42 +76,52 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="@drawable/squere_frame"
-        android:backgroundTint="@color/primary"
+        android:background="@drawable/circle_frame"
+        android:backgroundTint="@color/white"
         android:button="@null"
         android:checked="true"
+        android:fontFamily="@font/rubik_medium"
         android:gravity="center"
         android:text="All"
-        android:textColor="@color/white" />
+        android:textColor="@color/primary"
+        android:textSize="14sp"
+        android:textStyle="bold" />
 
       <RadioButton
         android:id="@+id/radioButton2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="@drawable/squere_frame"
-        android:backgroundTint="@color/white"
+        android:background="@drawable/circle_frame"
+        android:backgroundTint="@color/primary"
         android:button="@null"
+        android:fontFamily="@font/rubik_medium"
         android:gravity="center"
         android:text="Income"
-        android:textColor="@color/text_primary" />
+        android:textColor="@color/text_disable"
+        android:textSize="14sp"
+        android:textStyle="bold" />
 
       <RadioButton
         android:id="@+id/radioButton3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="@drawable/squere_frame"
-        android:backgroundTint="@color/white"
+        android:background="@drawable/circle_frame"
+        android:backgroundTint="@color/primary"
         android:button="@null"
+        android:fontFamily="@font/rubik_medium"
         android:gravity="center"
         android:text="Outcome"
-        android:textColor="@color/text_primary" />
+        android:textColor="@color/text_disable"
+        android:textSize="14sp"
+        android:textStyle="bold" />
     </RadioGroup>
   </androidx.constraintlayout.widget.ConstraintLayout>
 
   <Button
     android:id="@+id/buttonMenu4"
+    style="@style/Widget.Material3.Button.OutlinedButton"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:backgroundTint="@color/onbackground"
@@ -132,7 +142,8 @@
     app:layout_constraintBottom_toBottomOf="@+id/buttonBack"
     app:layout_constraintEnd_toStartOf="@+id/guideline4"
     app:layout_constraintTop_toTopOf="@+id/buttonBack"
-    app:strokeWidth="0dp"
+    app:strokeColor="@color/primary"
+    app:strokeWidth="1dp"
     tools:ignore="TouchTargetSizeCheck" />
 
   <ScrollView

@@ -108,6 +108,7 @@
 
           <Button
             android:id="@+id/buttonMenu"
+            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -115,6 +116,7 @@
             android:fontFamily="@font/rubik"
             android:insetTop="0dp"
             android:insetBottom="0dp"
+            android:outlineProvider="none"
             android:paddingLeft="10dp"
             android:paddingRight="12dp"
             android:text="Menu"
@@ -128,7 +130,8 @@
             app:iconTint="@color/primary"
             app:layout_constraintEnd_toStartOf="@+id/guideline3"
             app:layout_constraintTop_toTopOf="parent"
-            app:strokeWidth="0dp"
+            app:strokeColor="@color/primary"
+            app:strokeWidth="1dp"
             tools:ignore="TouchTargetSizeCheck" />
 
           <androidx.constraintlayout.widget.ConstraintLayout
@@ -136,8 +139,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:background="@drawable/squere_frame"
-            android:backgroundTint="#d3d3d3"
+            android:background="@drawable/squere_frame_with_outline"
             app:layout_constraintEnd_toStartOf="@+id/guideline3"
             app:layout_constraintStart_toStartOf="@+id/guideline2"
             app:layout_constraintTop_toBottomOf="@+id/textViewBalance">
@@ -248,12 +250,13 @@
             android:fontFamily="@font/rubik"
             android:text="See All"
             android:textColor="@color/text_primary"
+            android:textSize="16sp"
             app:cornerRadius="50dp"
             app:layout_constraintBottom_toBottomOf="@+id/textView17"
             app:layout_constraintEnd_toStartOf="@+id/guideline3"
             app:layout_constraintTop_toTopOf="@+id/textView17"
             app:strokeColor="@color/primary"
-            app:strokeWidth="0dp" />
+            app:strokeWidth="1dp" />
 
           <ImageView
             android:id="@+id/imageView"
@@ -272,12 +275,12 @@
             android:layout_marginTop="16dp"
             android:layout_weight="1"
             android:backgroundTint="@color/primary"
-            android:fontFamily="@font/rubik"
+            android:fontFamily="@font/rubik_medium"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:padding="8dp"
             android:text="New Transaction"
-            android:textSize="14sp"
+            android:textSize="16sp"
             app:cornerRadius="50dp"
             app:icon="@drawable/ic_baseline_add_24"
             app:iconGravity="textStart"

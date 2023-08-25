@@ -8,9 +8,8 @@
    android:layout_width="match_parent"
    android:layout_height="wrap_content"
    android:layout_marginBottom="12dp"
-   android:background="@drawable/squere_frame"
-   android:backgroundTint="@color/onbackground"
-   android:padding="8dp">
+   android:background="@drawable/squere_frame_with_outline_backgroundfill"
+   android:padding="10dp">
 
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/itemIcon"
@@ -85,9 +84,8 @@
      android:layout_height="wrap_content"
      android:layout_weight="1"
      android:fontFamily="@font/ubuntu"
-     android:gravity="bottom"
+     android:gravity="center|end"
      android:text="1 Jan 2000, 18.34"
-     android:textAlignment="textEnd"
      android:textColor="@color/black"
      android:textSize="12sp" />
   </LinearLayout>

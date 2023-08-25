@@ -15,7 +15,6 @@
       android:layout_height="wrap_content"
       android:layout_marginTop="16dp"
       android:background="@drawable/circle_frame_with_outline"
-      android:backgroundTint="#F5F4ED"
       android:padding="12dp"
       android:rotation="180"
       app:layout_constraintStart_toStartOf="@+id/guideline6"
@@ -64,7 +63,7 @@
     <ScrollView
       android:layout_width="0dp"
       android:layout_height="0dp"
-      android:layout_marginTop="20dp"
+      android:layout_marginTop="16dp"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toStartOf="@+id/guideline"
       app:layout_constraintStart_toStartOf="@+id/guideline6"
@@ -95,7 +94,8 @@
             android:paddingTop="17dp"
             android:paddingEnd="16dp"
             android:paddingBottom="17dp"
-            android:popupTheme="@style/Base.Theme.MyWallet" />
+            android:popupTheme="@style/Base.Theme.MyWallet"
+            android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -115,7 +115,8 @@
             android:inputType="none"
             android:paddingTop="17dp"
             android:paddingBottom="17dp"
-            android:popupTheme="@style/Base.Theme.MyWallet" />
+            android:popupTheme="@style/Base.Theme.MyWallet"
+            android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -129,7 +130,8 @@
             android:id="@+id/textInputName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text|textEnableTextConversionSuggestions" />
+            android:inputType="text|textEnableTextConversionSuggestions"
+            android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -148,7 +150,8 @@
             android:layout_height="wrap_content"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:inputType="datetime|date" />
+            android:inputType="datetime|date"
+            android:textSize="16sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -167,7 +170,8 @@
             android:layout_height="wrap_content"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:inputType="datetime" />
+            android:inputType="datetime"
+            android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -181,7 +185,8 @@
             android:id="@+id/textInputAmount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number|numberDecimal" />
+            android:inputType="number|numberDecimal"
+            android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -195,7 +200,8 @@
             android:id="@+id/textInputNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text|textLongMessage|textMultiLine" />
+            android:inputType="text|textLongMessage|textMultiLine"
+            android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
@@ -204,7 +210,7 @@
           android:layout_height="wrap_content"
           android:layout_marginTop="12dp"
           android:layout_marginBottom="16dp"
-          android:fontFamily="@font/rubik"
+          android:fontFamily="@font/rubik_medium"
           android:paddingTop="14dp"
           android:paddingBottom="14dp"
           android:text="Save"
@@ -231,7 +237,9 @@
         android:layout_height="wrap_content"
         android:layout_margin="2dp"
         android:background="@drawable/circle_frame"
+        android:backgroundTint="@color/primary"
         android:orientation="horizontal"
+        android:padding="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -239,22 +247,26 @@
 
         <RadioButton
           android:id="@+id/radioButton"
+          style="@style/Widget.Material3.CompoundButton.RadioButton"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_gravity="center"
           android:layout_weight="1"
           android:background="@drawable/circle_frame"
-          android:backgroundTint="@color/primary"
+          android:backgroundTint="@color/white"
           android:button="@null"
           android:checked="true"
           android:drawableTint="#FFFFFF"
+          android:fontFamily="@font/rubik_medium"
           android:gravity="center"
           android:includeFontPadding="false"
           android:paddingTop="8dp"
           android:paddingBottom="8dp"
           android:text="Income"
-          android:textColor="@color/white"
-          android:textSize="16sp" />
+          android:textAllCaps="false"
+          android:textColor="@color/text_primary"
+          android:textSize="14sp"
+          android:textStyle="bold" />
 
         <RadioButton
           android:id="@+id/radioButton2"
@@ -262,15 +274,17 @@
           android:layout_height="wrap_content"
           android:layout_weight="1"
           android:background="@drawable/circle_frame"
-          android:backgroundTint="@color/white"
+          android:backgroundTint="@color/primary"
           android:button="@null"
+          android:fontFamily="@font/rubik_medium"
           android:gravity="center"
           android:includeFontPadding="false"
           android:paddingTop="8dp"
           android:paddingBottom="8dp"
           android:text="Outcome"
-          android:textColor="@color/text_primary"
-          android:textSize="16sp" />
+          android:textColor="@color/text_disable"
+          android:textSize="14sp"
+          android:textStyle="bold" />
 
       </RadioGroup>
     </androidx.constraintlayout.widget.ConstraintLayout>

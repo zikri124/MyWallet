@@ -74,11 +74,11 @@ class HistoriesActivity : AppCompatActivity(), View.OnClickListener, ItemLogRVAd
     }
 
     private fun setRadioColor(radioButton: RadioButton, radioButton2: RadioButton) {
-        radioButton.background.setTint(getColor(R.color.primary))
-        radioButton.setTextColor(getColor(R.color.white))
+        radioButton.background.setTint(getColor(R.color.white))
+        radioButton.setTextColor(getColor(R.color.primary))
 
-        radioButton2.background.setTint(getColor(R.color.white))
-        radioButton2.setTextColor(getColor(R.color.text_primary))
+        radioButton2.background.setTint(getColor(R.color.primary))
+        radioButton2.setTextColor(getColor(R.color.text_disable))
     }
 
     private fun setDB() {
