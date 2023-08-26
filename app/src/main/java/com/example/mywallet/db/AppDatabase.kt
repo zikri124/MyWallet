@@ -9,7 +9,7 @@ import com.example.mywallet.db.dao.TransactionDao
 import com.example.mywallet.db.entity.CategoryEntity
 import com.example.mywallet.db.entity.TransactionEntity
 
-@Database(entities = [CategoryEntity::class, TransactionEntity::class], version = 1, exportSchema = false)
+@Database(entities = [CategoryEntity::class, TransactionEntity::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
     abstract fun transactionDao(): TransactionDao

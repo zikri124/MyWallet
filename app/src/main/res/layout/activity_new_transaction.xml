@@ -25,7 +25,7 @@
       android:id="@+id/textView5"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="24dp"
+      android:layout_marginTop="16dp"
       android:fontFamily="@font/rubik_medium"
       android:text="New"
       android:textColor="@color/black"
@@ -73,30 +73,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
-        <com.google.android.material.textfield.TextInputLayout
-          android:id="@+id/textInputAccountlayout"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginBottom="16dp"
-          android:hint="Account">
-
-          <AutoCompleteTextView
-            android:id="@+id/textInputAccount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:elegantTextHeight="false"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:inputType="none"
-            android:paddingStart="16dp"
-            android:paddingTop="17dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="17dp"
-            android:popupTheme="@style/Base.Theme.MyWallet"
-            android:textSize="16sp" />
-        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
           android:id="@+id/textInputCategorylayout"

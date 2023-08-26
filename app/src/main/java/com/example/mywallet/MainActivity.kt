@@ -80,23 +80,6 @@ class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickList
     }
 
     private fun setUserData() {
-//        mDB.collection("users").document("ENBQXgcU0S4uGKRx6jwt")
-//            .get()
-//            .addOnSuccessListener { documentSnapshot ->
-//                uid = "ENBQXgcU0S4uGKRx6jwt"
-//                val name = documentSnapshot["name"].toString()
-//                balance = documentSnapshot["balance"].toString()
-//                val amount = "Rp " + formatter(balance)
-//                mainBinding.textViewName.text = name
-//                mainBinding.textViewBalance.text = amount
-//                contentHasLoaded = true
-//                Log.d("FirestoreLog", "Success")
-//            }
-//            .addOnFailureListener { exception ->
-//                val text = "Error when getting documents : " + exception
-//                Log.e("FirestoreLog", text)
-//                Toast.makeText(this, text,Toast.LENGTH_SHORT).show()
-//            }
         sharedpreferences = getSharedPreferences("USER_DATA", Context.MODE_PRIVATE)
 //        val userid = sharedpreferences.getString("UID", null)
 //        val name = sharedpreferences.getString("NAME", null)
@@ -121,24 +104,8 @@ class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickList
         month = if (month.toInt() < 10) "0$month" else month
         val formattedDate = calendarInstance.get(Calendar.YEAR).toString() + "/" + month + "/" + "01"
 
-//        mDB.collection("logs")
-//            .whereEqualTo("uid",uid)
-//            .whereGreaterThanOrEqualTo("date", formattedDate)
-//            .orderBy("date", Query.Direction.DESCENDING)
-//            .orderBy("time", Query.Direction.DESCENDING)
-//            .get()
-//            .addOnSuccessListener { documentSnapshot ->
-//                documents = documentSnapshot
-//                Log.d("FirestoreLog", "Success")
-//                setItemsData()
-//            }
-//            .addOnFailureListener { exception ->
-//                val text = "Error when getting documents : " + exception
-//                Log.e("FirestoreLog", text)
-//                Toast.makeText(this, text,Toast.LENGTH_SHORT).show()
-//            }
         transactionsList.clear()
-        transactionsList.addAll(mDB.transactionDao().loadTransactionFrom(formattedDate))
+        transactionsList.addAll(mDB.transactionDao().loadTransactionFromDate(formattedDate))
         setItemsData()
     }
 

@@ -13,11 +13,13 @@ data class TransactionEntity(
     @ColumnInfo(name = "name")
     val name: String?,
     @ColumnInfo(name = "categoryId")
-    val categoryId: Int?,
+    val categoryId: String?,
     @ColumnInfo(name = "userId")
     val userId: String?,
+    @ColumnInfo(name = "accountId")
+    val accountId: String?,
     @ColumnInfo(name = "transactionType")
-    val transactionType: Int?,
+    val transactionType: String?,
     @ColumnInfo(name = "amount")
     val amount: String?,
     @ColumnInfo(name = "date")

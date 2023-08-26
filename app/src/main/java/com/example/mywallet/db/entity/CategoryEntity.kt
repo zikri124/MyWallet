@@ -11,5 +11,7 @@ data class CategoryEntity(
     @ColumnInfo(name = "id")
     val id: String = UUID.randomUUID().toString(),
     @ColumnInfo(name = "name")
-    val name: String?
+    val name: String?,
+    @ColumnInfo(name = "type")
+    val type: String?
 )

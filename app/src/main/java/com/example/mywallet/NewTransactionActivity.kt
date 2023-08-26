@@ -1,8 +1,9 @@
 package com.example.mywallet
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
-import android.graphics.Typeface
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -15,34 +16,33 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.example.mywallet.databinding.ActivityNewTransactionBinding
+import com.example.mywallet.db.AppDatabase
+import com.example.mywallet.db.entity.TransactionEntity
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
+import java.util.UUID
 
 class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
-    private lateinit var mDB : FirebaseFirestore
+    private lateinit var mDB : AppDatabase
     private lateinit var binding : ActivityNewTransactionBinding
+    private lateinit var sharedpreferences: SharedPreferences
 
     private lateinit var backButton: ImageButton
     private lateinit var submitButton : Button
     private lateinit var dateInput : TextInputEditText
     private lateinit var timeInput : TextInputEditText
-    private lateinit var accountInput: AutoCompleteTextView
     private lateinit var categoryInput: AutoCompleteTextView
     private lateinit var amountInput: TextInputEditText
     private lateinit var dateInputLayout: TextInputLayout
     private lateinit var timeInputLayout: TextInputLayout
-    private lateinit var accountInputLayout: TextInputLayout
 
     private lateinit var balance : String
     private lateinit var uid : String
@@ -77,7 +77,8 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setDB() {
-        mDB = Firebase.firestore
+        mDB = AppDatabase.getDatabase(applicationContext)
+        sharedpreferences = getSharedPreferences("USER_DATA", Context.MODE_PRIVATE)
         uid = intent.getStringExtra("uid").toString()
         balance = intent.getStringExtra("balance").toString()
     }
@@ -88,20 +89,15 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
         submitButton = binding.buttonNewActSubmit
         dateInput = binding.textInputDate
         timeInput = binding.textInputTime
-        accountInput = binding.textInputAccount
         categoryInput = binding.textInputCategory
         amountInput = binding.textInputAmount
         dateInputLayout = binding.textInputDateLayout
         timeInputLayout = binding.textInputTimelayout
-        accountInputLayout = binding.textInputAccountlayout
 
         backButton.setOnClickListener(this)
         submitButton.setOnClickListener(this)
         dateInput.setOnClickListener(this)
         timeInput.setOnClickListener(this)
-        accountInputLayout.setOnClickListener(this)
-
-        accountInput.setOnClickListener(this)
 
 //        dateInput.setOnTouchListener { v, event ->
 //            when (event?.action) {
@@ -177,6 +173,7 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setDropdownCategory(type: String) {
+
         var categoryArray = arrayOf("Food", "Snack", "Entertainment", "Laundry", "Grocery", "Monthly fee", "Other")
 
         if (type == "income") {
@@ -198,8 +195,9 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun checkBalanceIsFine() : Boolean {
         val amount : Int = binding.textInputAmount.text.toString().toInt()
-        when (accountInput.text.toString()) {
-            "Wallet" -> {
+        val account = "wallet"
+        when (account) {
+            "wallet" -> {
                 if (balance.toInt() < amount) {
                     val text = "error when add log data, Not enough money in this Account"
                     Log.d("error when add log data", text)
@@ -213,29 +211,25 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun checkIsErrorField() : Boolean {
         var isError = false
-        if (binding.textInputName.text.toString() == "") {
+        if (binding.textInputName.text.toString().length == 0) {
             isError = true
             binding.textInputNamelayout.error = "Please fill this field"
         }
-        if (dateInput.text.toString() == "") {
+        if (dateInput.text.toString().length == 0) {
             isError = true
             dateInputLayout.error = "Please fill this field"
         }
-        if (timeInput.text.toString() == "") {
+        if (timeInput.text.toString().length == 0) {
             isError = true
             timeInputLayout.error = "Please fill this field"
         }
-        if (binding.textInputAmount.text.toString() == "") {
+        if (binding.textInputAmount.text.toString().length == 0) {
             isError = true
             binding.textInputAmountlayout.error = "Please fill this field"
         }
-        if (categoryInput.text.toString() == "") {
+        if (categoryInput.text.toString().length == 0) {
             isError = true
             binding.textInputCategorylayout.error = "Please fill this field"
-        }
-        if (accountInput.text.toString() == "") {
-            isError = true
-            binding.textInputAccountlayout.error = "Please fill this field"
         }
         return isError
     }
@@ -251,60 +245,52 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
             "type" to transactionType,
             "amount" to binding.textInputAmount.text.toString().toInt(),
             "category" to binding.textInputCategory.text.toString(),
-            "account" to binding.textInputAccount.text.toString(),
+            "account" to "wallet",
             "note" to binding.textInputNote.text.toString()
         )
 
-        mDB.collection("logs")
-            .add(data)
-            .addOnSuccessListener { docRef ->
-                Log.d("FirestoreLog", "Id : " + docRef.id)
-                if (transactionType == "outcome") {
-                    setBalance("-$amount")
-                } else if (transactionType == "income") {
-                    setBalance(amount)
-                }
-            }
-            .addOnFailureListener { exception ->
-                val text = "Error when adding document : " + exception
-                Log.e("FirestoreLog", text)
-                Toast.makeText(this, text,Toast.LENGTH_SHORT).show()
-            }
+        val name = binding.textInputName.text.toString()
+        val date = binding.textInputDate.text.toString()
+        val time = binding.textInputTime.text.toString()
+        val category = binding.textInputCategory.text.toString()
+        val account = "wallet"
+        val note = binding.textInputNote.text.toString()
+
+        val transaction = TransactionEntity(UUID.randomUUID().toString(), name, category, uid, account, transactionType, amount, date, time, note)
+        mDB.transactionDao().insertTransaction(transaction)
+        if (transactionType == "outcome") {
+            setBalance("-$amount", account)
+        } else if (transactionType == "income") {
+            setBalance(amount, account)
+        }
     }
 
-    private fun setBalance(amount : String) {
-        when (binding.textInputAccount.text.toString()) {
-            "Wallet" -> {
-                mDB.collection("users").document(uid)
-                    .update("balance", balance.toInt() + amount.toInt())
-                    .addOnSuccessListener {
-                        showResponseDialog()
-                    }
-                    .addOnFailureListener { exception ->
-                        val text = "Error when getting documents : " + exception
-                        Log.e("FirestoreLog", text)
-                        Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
-                    }
+    private fun setBalance(amount : String, account : String) {
+        when (account) {
+            "wallet" -> {
+                sharedpreferences.edit().putInt("balance", balance.toInt() + amount.toInt())
+                showResponseDialog()
             }
             else -> {
-                showResponseDialog()
+//                showResponseDialog()
+                Log.d("save data", "the account did not supported")
             }
         }
     }
 
-    private fun showSelectAccountDialog() {
-        val accountArray = arrayOf("Wallet", "BNI", "BRI")
-        MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_App_MaterialAlertDialog)
-            .setTitle("Select an Account")
-            .setCancelable(false)
-            .setSingleChoiceItems(accountArray, checkedAccountItem, { dialogInterface, i ->
-                Log.d("dialog select", i.toString())
-                accountInput.setText(accountArray[i])
-                checkedAccountItem = i
-                dialogInterface.cancel()
-            })
-            .show()
-    }
+//    private fun showSelectAccountDialog() {
+//        val accountArray = arrayOf("Wallet", "BNI", "BRI")
+//        MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_App_MaterialAlertDialog)
+//            .setTitle("Select an Account")
+//            .setCancelable(false)
+//            .setSingleChoiceItems(accountArray, checkedAccountItem) { dialogInterface, i ->
+//                Log.d("dialog select", i.toString())
+//                accountInput.setText(accountArray[i])
+//                checkedAccountItem = i
+//                dialogInterface.cancel()
+//            }
+//            .show()
+//    }
 
     private fun showResponseDialog() {
         MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_App_MaterialAlertDialog)
@@ -337,9 +323,6 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
                         submitLog()
                     }
                 }
-            }
-            accountInput.id -> {
-                showSelectAccountDialog()
             }
         }
     }

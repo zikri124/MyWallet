@@ -1,31 +1,27 @@
 package com.example.mywallet
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.RadioButton
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mywallet.databinding.ActivityHistoriesBinding
+import com.example.mywallet.db.AppDatabase
+import com.example.mywallet.db.entity.TransactionEntity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 
 class HistoriesActivity : AppCompatActivity(), View.OnClickListener, ItemLogRVAdapter.RecyclerViewClickListener {
-    private lateinit var mDB : FirebaseFirestore
-    private var documents : QuerySnapshot? = null
+    private lateinit var mDB : AppDatabase
     private lateinit var uid : String
     private lateinit var binding : ActivityHistoriesBinding
     private lateinit var dataItemLogRVAdapter: ItemLogRVAdapter
+
+    private var transactionsList = mutableListOf<TransactionEntity>()
 
     private lateinit var btnMenu : Button
     private lateinit var backButton: ImageButton
@@ -82,7 +78,7 @@ class HistoriesActivity : AppCompatActivity(), View.OnClickListener, ItemLogRVAd
     }
 
     private fun setDB() {
-        mDB = Firebase.firestore
+        mDB = AppDatabase.getDatabase(applicationContext)
         uid = intent.getStringExtra("uid").toString()
     }
 
@@ -94,42 +90,36 @@ class HistoriesActivity : AppCompatActivity(), View.OnClickListener, ItemLogRVAd
     }
 
     private fun getLogsData(type : String) {
-        mDB.collection("logs")
-            .whereEqualTo("uid",uid)
-            .orderBy("date", Query.Direction.DESCENDING)
-            .orderBy("time", Query.Direction.DESCENDING)
-            .limit(200)
-            .get()
-            .addOnSuccessListener { documentSnapshot ->
-                documents = documentSnapshot
-                Log.d("FirestoreLog", "Success")
-                setItemsData("all")
-            }
-            .addOnFailureListener { exception ->
-                val text = "Error when getting documents : " + exception
-                Log.e("FirestoreLog", text)
-                Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
-            }
+        transactionsList.clear()
+        transactionsList.addAll(mDB.transactionDao().loadAllTransactions())
+        setItemsData(transactionType)
     }
 
-    private fun setItemsData(type: String) {
-        val dataset = ArrayList<dataRV>()
-        for (document in documents!!) {
-            if (type == "all" || document.data.getValue("type").toString() == type) {
-                val id = document.id
-                val name = document.data.getValue("name").toString()
-                val date = document.data.getValue("date").toString()
-                val time = document.data.getValue("time").toString()
-                val type = document.data.getValue("type").toString()
-                val amount = document.data.getValue("amount").toString().toInt()
-                val category = document.data.getValue("category").toString()
-                val note = document.data.getValue("note").toString()
-                val data = dataRV(id, name, date, time, type, amount, category, note)
-                dataset.add(data)
+    private fun setItemsData(showType: String) {
+        if (transactionsList.count() < 1) {
+            binding.noDataImageLayout.visibility = View.VISIBLE
+            binding.recyclerViewLog.visibility = View.GONE
+//            contentHasLoaded = true
+        } else {
+            val dataset = ArrayList<dataRV>()
+            for (transactionData in transactionsList!!) {
+                val userid = transactionData.userId.toString()
+                val type = transactionData.transactionType.toString()
+                if (userid == uid && (showType == "all" || showType == type)) {
+                    val id = transactionData.id
+                    val name = transactionData.name.toString()
+                    val date = transactionData.date.toString()
+                    val time = transactionData.time.toString()
+                    val amount = transactionData.amount!!.toInt()
+                    val category = transactionData.categoryId.toString()
+                    val note = transactionData.note.toString()
+                    val data = dataRV(id, name, date, time, type, amount, category, note)
+                    dataset.add(data)
+                }
             }
+            setRecyclerView(dataset)
+            dataItemLogRVAdapter.listener = this
         }
-        setRecyclerView(dataset)
-        dataItemLogRVAdapter.listener = this
     }
 
     override fun onClick(view: View?) {
@@ -163,7 +153,12 @@ class HistoriesActivity : AppCompatActivity(), View.OnClickListener, ItemLogRVAd
             .show()
     }
 
+    private fun showMenu(v: View) {
+
+    }
+
     override fun onClick(view: View, data: dataRV) {
         showEditLogDialog(data)
+//        showMenu(view)
     }
 }
