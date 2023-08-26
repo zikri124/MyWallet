@@ -1,8 +1,10 @@
 package com.example.mywallet.db.entity
 
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 import java.util.UUID
 
 @Entity(tableName = "transactions")
@@ -28,4 +30,13 @@ data class TransactionEntity(
     val time: String?,
     @ColumnInfo(name = "note")
     val note: String?
+)
+
+data class TransactionAndCategory(
+    @Embedded val transaction: TransactionEntity,
+    @Relation(
+        parentColumn = "categoryId",
+        entityColumn = "id"
+    )
+    val category: CategoryEntity
 )

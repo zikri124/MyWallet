@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.example.mywallet.databinding.ActivityNewTransactionBinding
 import com.example.mywallet.db.AppDatabase
+import com.example.mywallet.db.entity.CategoryEntity
 import com.example.mywallet.db.entity.TransactionEntity
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -46,6 +47,8 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var balance : String
     private lateinit var uid : String
+    private var categoryList = mutableListOf<CategoryEntity>()
+    private var transactionType = "income"
 
     private val c = Calendar.getInstance()
 
@@ -62,9 +65,6 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
             .setTitleText("Select Time")
             .build()
 
-    private var transactionType = "income"
-    private var checkedAccountItem = 0
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -73,7 +73,7 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
         setDB()
         setView()
         setRadioListener()
-        setDropdownCategory(transactionType)
+        getDropdownCategoryData()
     }
 
     private fun setDB() {
@@ -98,14 +98,6 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
         submitButton.setOnClickListener(this)
         dateInput.setOnClickListener(this)
         timeInput.setOnClickListener(this)
-
-//        dateInput.setOnTouchListener { v, event ->
-//            when (event?.action) {
-//                MotionEvent.ACTION_DOWN -> datePicker.show(supportFragmentManager, "DATE_PICKER")
-//            }
-//
-//            v?.onTouchEvent(event) ?: true
-//        }
 
         dateInput.setOnClickListener {
             datePicker.show(supportFragmentManager, "DATE_PICKER")
@@ -167,17 +159,24 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
                 }
             }
             setRadioColor(button, checked)
-            setDropdownCategory(transactionType)
+            setDropdownCategory()
             checked = button
         }
     }
 
-    private fun setDropdownCategory(type: String) {
+    private fun getDropdownCategoryData() {
+        categoryList.addAll(mDB.categoryDao().loadAllCategories())
 
-        var categoryArray = arrayOf("Food", "Snack", "Entertainment", "Laundry", "Grocery", "Monthly fee", "Other")
+        setDropdownCategory()
+    }
 
-        if (type == "income") {
-            categoryArray = arrayOf("Allowance", "Other")
+    private fun setDropdownCategory() {
+        var categoryArray = arrayListOf<String>()
+
+        categoryList.forEach {
+            if (it.type == transactionType) {
+                categoryArray.add(it.name.toString())
+            }
         }
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, categoryArray)
@@ -237,24 +236,15 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
     private fun submitLog() {
         val amount = binding.textInputAmount.text.toString()
 
-        val data = hashMapOf(
-            "uid" to intent.getStringExtra("uid"),
-            "name" to binding.textInputName.text.toString(),
-            "date" to binding.textInputDate.text.toString(),
-            "time" to binding.textInputTime.text.toString(),
-            "type" to transactionType,
-            "amount" to binding.textInputAmount.text.toString().toInt(),
-            "category" to binding.textInputCategory.text.toString(),
-            "account" to "wallet",
-            "note" to binding.textInputNote.text.toString()
-        )
+        var noteText = binding.textInputNote.text.toString()
+        if (noteText == "") noteText = "-"
 
         val name = binding.textInputName.text.toString()
         val date = binding.textInputDate.text.toString()
         val time = binding.textInputTime.text.toString()
         val category = binding.textInputCategory.text.toString()
         val account = "wallet"
-        val note = binding.textInputNote.text.toString()
+        val note = noteText
 
         val transaction = TransactionEntity(UUID.randomUUID().toString(), name, category, uid, account, transactionType, amount, date, time, note)
         mDB.transactionDao().insertTransaction(transaction)

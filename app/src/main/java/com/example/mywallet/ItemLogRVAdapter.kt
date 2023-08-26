@@ -1,24 +1,32 @@
 package com.example.mywallet
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import com.example.mywallet.databinding.ItemLogBinding
+import com.example.mywallet.databinding.ItemLogExpandableBinding
+import com.example.mywallet.db.AppDatabase
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-internal class ItemLogRVAdapter(private val dataSet: ArrayList<dataRV>) : RecyclerView.Adapter<ItemLogRVAdapter.ViewHolder>() {
+internal class ItemLogRVAdapter(private val dataSet: ArrayList<dataRV>, private val context: Context, private val mDB : AppDatabase) : RecyclerView.Adapter<ItemLogRVAdapter.ViewHolder>() {
     var listener : RecyclerViewClickListener? = null
     private val data = dataSet
 
-    inner class ViewHolder(binding: ItemLogBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(binding: ItemLogExpandableBinding) : RecyclerView.ViewHolder(binding.root) {
         val itemName : TextView
         val itemTime : TextView
         val amount : TextView
         val itemIcon : ConstraintLayout
         val item : ConstraintLayout
         val category : TextView
+        val note : TextView
+        val subItem : ConstraintLayout
+        val deleteButton : Button
+        val editButton : Button
 
         init {
             itemName = binding.tittle
@@ -27,15 +35,19 @@ internal class ItemLogRVAdapter(private val dataSet: ArrayList<dataRV>) : Recycl
             itemIcon = binding.itemIcon
             item = binding.logItemLayout
             category = binding.tittle4
+            note = binding.tittle7
+            subItem = binding.subItem
+            deleteButton = binding.button2
+            editButton = binding.button
         }
     }
 
     interface RecyclerViewClickListener {
-        fun onClick(view: View, data: dataRV)
+        fun onClick(view: View, data: dataRV, status: String)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemLogBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ItemLogExpandableBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
@@ -48,6 +60,7 @@ internal class ItemLogRVAdapter(private val dataSet: ArrayList<dataRV>) : Recycl
         holder.itemName.text = result.getName()
         holder.itemTime.text = result.getDate() + ", " + result.getTime()
         holder.category.text = result.getCategory()
+        holder.note.text = result.getNote()
 
         if (result.getType() == "income") {
             holder.amount.text = "+Rp " + formatter(result.getAmount().toString())
@@ -59,9 +72,46 @@ internal class ItemLogRVAdapter(private val dataSet: ArrayList<dataRV>) : Recycl
             holder.amount.text = "type has not been registered"
         }
 
-        holder.item.setOnClickListener {
-            listener?.onClick(it, data[position])
+        if (result.getIsExpanded()) {
+            holder.subItem.visibility = View.VISIBLE
+        } else {
+            holder.subItem.visibility = View.GONE
         }
+
+        holder.deleteButton.setOnClickListener {
+            showDeleteLogDialog(it, data[position], position)
+        }
+
+        holder.item.setOnClickListener {
+            data[position].setIsExpanded(!data[position].getIsExpanded())
+            listener?.onClick(it, data[position], "expanded")
+            notifyItemChanged(position)
+        }
+    }
+
+    private fun showDeleteLogDialog(it: View, data: dataRV, position: Int) {
+        MaterialAlertDialogBuilder(context, R.style.ThemeOverlay_App_MaterialAlertDialog)
+            .setCancelable(false)
+            .setTitle("Are you sure to delete this transaction log?")
+            .setMessage("Name: " + data.getName() +
+                    "\nTime : " + data.getDate() + ", " + data.getTime() +
+                    "\nAmount : " + data.getAmount() +
+                    "\nNote : " + if (data.getNote()=="") "-" else data.getNote()  +
+                    "\n" + data.getId())
+            .setPositiveButton("Delete") { dialog, which ->
+                mDB.transactionDao().deleteTransaction(data.getId())
+                dialog.cancel()
+                dataSet.remove(data)
+                notifyItemRemoved(position)
+                listener?.onClick(it, data, "deleted")
+            }
+            .setNegativeButton("Cancel") { dialog, which ->
+                dialog.cancel()
+            }
+//            .setNeutralButton("Delete") { dialog, which ->
+//
+//            }
+            .show()
     }
 
     private fun formatter(amount: String): String {
@@ -104,6 +154,7 @@ class dataRV(id : String, name : String, date : String, time : String, type : St
     private var amount : Int
     private var category: String
     private var note : String
+    private var isExpand = false
 
     init {
         this.id = id
@@ -146,5 +197,13 @@ class dataRV(id : String, name : String, date : String, time : String, type : St
 
     fun getNote() : String {
         return note
+    }
+
+    fun getIsExpanded() : Boolean {
+        return isExpand
+    }
+
+    fun setIsExpanded(newStat: Boolean) {
+        isExpand = newStat
     }
 }

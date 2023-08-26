@@ -3,12 +3,12 @@ package com.example.mywallet
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.databinding.DataBindingUtil
@@ -16,10 +16,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mywallet.databinding.ActivityMainBinding
 import com.example.mywallet.db.AppDatabase
-import com.example.mywallet.db.entity.TransactionEntity
+import com.example.mywallet.db.entity.TransactionAndCategory
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickListener,
     View.OnClickListener {
@@ -28,7 +27,7 @@ class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickList
     private lateinit var dataItemLogRVAdapter: ItemLogRVAdapter
     private lateinit var sharedpreferences: SharedPreferences
 
-    private var transactionsList = mutableListOf<TransactionEntity>()
+    private var transactionsList = mutableListOf<TransactionAndCategory>()
     private lateinit var uid : String
     private lateinit var balance : String
 
@@ -105,7 +104,7 @@ class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickList
         val formattedDate = calendarInstance.get(Calendar.YEAR).toString() + "/" + month + "/" + "01"
 
         transactionsList.clear()
-        transactionsList.addAll(mDB.transactionDao().loadTransactionFromDate(formattedDate))
+        transactionsList.addAll(mDB.transactionDao().getTransactionAndCategoryFromAnyDate(formattedDate))
         setItemsData()
     }
 
@@ -118,16 +117,16 @@ class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickList
         } else {
             val dataset = ArrayList<dataRV>()
             for (transactionData in transactionsList!!) {
-                val userid = transactionData.userId.toString()
+                val userid = transactionData.transaction.userId.toString()
                 if (userid == uid) {
-                    val id = transactionData.id
-                    val name = transactionData.name.toString()
-                    val date = transactionData.date.toString()
-                    val time = transactionData.time.toString()
-                    val type = transactionData.transactionType.toString()
-                    val amount = transactionData.amount!!.toInt()
-                    val category = transactionData.categoryId.toString()
-                    val note = transactionData.note.toString()
+                    val id = transactionData.transaction.id
+                    val name = transactionData.transaction.name.toString()
+                    val date = transactionData.transaction.date.toString()
+                    val time = transactionData.transaction.time.toString()
+                    val type = transactionData.category.type.toString()
+                    val amount = transactionData.transaction.amount!!.toInt()
+                    val category = transactionData.category.name.toString()
+                    val note = transactionData.transaction.note.toString()
                     val data = dataRV(id, name, date, time, type, amount, category, note)
                     dataset.add(data)
                 }
@@ -159,15 +158,18 @@ class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickList
 
     private fun setRecyclerView(dataset: ArrayList<dataRV>) {
         val recyclerView : RecyclerView = mainBinding.recyclerViewLog
-        dataItemLogRVAdapter = ItemLogRVAdapter(dataset)
+        dataItemLogRVAdapter = ItemLogRVAdapter(dataset, this@MainActivity, mDB)
         recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
         recyclerView.adapter = dataItemLogRVAdapter
 
         contentHasLoaded = true
     }
 
-    override fun onClick(view: View, data: dataRV) {
+    override fun onClick(view: View, data: dataRV, status: String) {
         Log.d("Tess", data.getName())
+        if (status == "deleted") {
+            getLogsData()
+        }
     }
 
     override fun onClick(view: View?) {

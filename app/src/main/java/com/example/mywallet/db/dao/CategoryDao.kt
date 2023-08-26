@@ -5,7 +5,9 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
+import com.example.mywallet.db.entity.CategoryAndTransaction
 import com.example.mywallet.db.entity.CategoryEntity
 
 @Dao
@@ -21,4 +23,8 @@ interface CategoryDao {
 
     @Delete
     fun deleteCategory(vararg category: CategoryEntity)
+
+    @Transaction
+    @Query("SELECT * FROM categories")
+    fun getCategoryAndTransaction(): List<CategoryAndTransaction>
 }
