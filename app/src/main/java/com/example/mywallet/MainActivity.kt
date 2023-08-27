@@ -80,12 +80,10 @@ class MainActivity : AppCompatActivity(), ItemLogRVAdapter.RecyclerViewClickList
 
     private fun setUserData() {
         sharedpreferences = getSharedPreferences("USER_DATA", Context.MODE_PRIVATE)
-//        val userid = sharedpreferences.getString("UID", null)
-//        val name = sharedpreferences.getString("NAME", null)
-        val userid = "011"
-        val name = "Zikri"
+        val userid = sharedpreferences.getString("UID", null)
+        val name = sharedpreferences.getString("USER_NAME", null)
+        balance = sharedpreferences.getString("USER_BALANCE", "0").toString()
         uid = userid.toString()
-        balance = sharedpreferences.getString("AMOUNT_STORED", "0").toString()
         if (userid == null) {
             val intent = Intent(this@MainActivity, InsertFirstDataActivity::class.java)
             startActivity(intent)

@@ -9,7 +9,7 @@ import com.example.mywallet.db.dao.TransactionDao
 import com.example.mywallet.db.entity.CategoryEntity
 import com.example.mywallet.db.entity.TransactionEntity
 
-@Database(entities = [CategoryEntity::class, TransactionEntity::class], version = 2, exportSchema = false)
+@Database(entities = [CategoryEntity::class, TransactionEntity::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
     abstract fun transactionDao(): TransactionDao
@@ -33,6 +33,7 @@ abstract class AppDatabase : RoomDatabase() {
                 AppDatabase::class.java,
                 "mywallet-db"
             )
+                .createFromAsset("database/mywallet-db.db")
                 .fallbackToDestructiveMigration()
                 .allowMainThreadQueries()
                 .build()

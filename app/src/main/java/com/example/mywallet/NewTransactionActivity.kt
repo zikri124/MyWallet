@@ -14,6 +14,7 @@ import android.widget.ImageButton
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import androidx.databinding.DataBindingUtil
 import com.example.mywallet.databinding.ActivityNewTransactionBinding
 import com.example.mywallet.db.AppDatabase
@@ -246,7 +247,7 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
         val account = "wallet"
         val note = noteText
 
-        val transaction = TransactionEntity(UUID.randomUUID().toString(), name, category, uid, account, transactionType, amount, date, time, note)
+        val transaction = TransactionEntity(UUID.randomUUID().toString(), name, category, uid, account, amount, date, time, note)
         mDB.transactionDao().insertTransaction(transaction)
         if (transactionType == "outcome") {
             setBalance("-$amount", account)
@@ -258,7 +259,11 @@ class NewTransactionActivity : AppCompatActivity(), View.OnClickListener {
     private fun setBalance(amount : String, account : String) {
         when (account) {
             "wallet" -> {
-                sharedpreferences.edit().putInt("balance", balance.toInt() + amount.toInt())
+//                sharedpreferences.edit().putInt("balance", balance.toInt() + amount.toInt())
+                val newBalance = balance.toInt() + amount.toInt()
+                sharedpreferences.edit {
+                    putString("USER_BALANCE", (newBalance.toString()))
+                }
                 showResponseDialog()
             }
             else -> {

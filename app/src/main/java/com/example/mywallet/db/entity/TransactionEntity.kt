@@ -20,8 +20,6 @@ data class TransactionEntity(
     val userId: String?,
     @ColumnInfo(name = "accountId")
     val accountId: String?,
-    @ColumnInfo(name = "transactionType")
-    val transactionType: String?,
     @ColumnInfo(name = "amount")
     val amount: String?,
     @ColumnInfo(name = "date")
@@ -36,7 +34,7 @@ data class TransactionAndCategory(
     @Embedded val transaction: TransactionEntity,
     @Relation(
         parentColumn = "categoryId",
-        entityColumn = "id"
+        entityColumn = "name"
     )
     val category: CategoryEntity
 )
